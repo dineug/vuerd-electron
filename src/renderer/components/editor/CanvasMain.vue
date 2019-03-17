@@ -756,6 +756,8 @@ export default {
   $key_pk: #B4B400;
   $key_fk: #dda8b1;
   $key_pfk: #60b9c4;
+  $background: #282828;
+  $background_size: 50px;
 
   ul, ol {
     padding-left: 0;
@@ -767,7 +769,11 @@ export default {
   }
 
   .main_canvas {
-    background-color: #282828;
+      background-color: $background;
+      background-image:
+          linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+      background-size: $background_size $background_size;
 
     input:focus {
       border-bottom: solid $column_selected 1px;
