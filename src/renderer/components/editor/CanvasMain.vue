@@ -757,7 +757,8 @@ export default {
   $key_fk: #dda8b1;
   $key_pfk: #60b9c4;
   $background: #282828;
-  $background_size: 50px;
+  $background_size: 100px;
+  $background_grid_size: 20px;
 
   ul, ol {
     padding-left: 0;
@@ -771,9 +772,15 @@ export default {
   .main_canvas {
       background-color: $background;
       background-image:
-          linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
-      background-size: $background_size $background_size;
+              linear-gradient(rgba(255,255,255,.04) 2px, transparent 2px),
+              linear-gradient(90deg, rgba(255,255,255,.04) 2px, transparent 2px),
+              linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: $background_size $background_size,
+      $background_size $background_size,
+      $background_grid_size $background_grid_size,
+      $background_grid_size $background_grid_size;
+      background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 
     input:focus {
       border-bottom: solid $column_selected 1px;
