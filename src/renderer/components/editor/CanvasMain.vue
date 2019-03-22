@@ -757,8 +757,8 @@ export default {
   $key_fk: #dda8b1;
   $key_pfk: #60b9c4;
   $background: #282828;
-  $background_size: 100px;
-  $background_grid_size: 20px;
+  $background_size: 500px;
+  $background_grid_size: 100px;
 
   ul, ol {
     padding-left: 0;
