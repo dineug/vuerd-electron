@@ -47,6 +47,9 @@ class IndexedDB {
     db.result = openDB.result
     db.tx = db.result.transaction(storeName, mode)
     db.store = db.tx.objectStore(storeName)
+    db.tx.oncomplete = e => {
+      db.result.close()
+    }
     return db
   }
 
@@ -77,9 +80,6 @@ class IndexedDB {
             json: json,
             update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
           })
-          db.tx.oncomplete = e => {
-            db.result.close()
-          }
         }
         break
       case 'model':
@@ -99,9 +99,6 @@ class IndexedDB {
             }),
             update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
           })
-          db.tx.oncomplete = e => {
-            db.result.close()
-          }
         }
         break
     }
@@ -119,9 +116,6 @@ class IndexedDB {
         json: this.core.file.toJSON(),
         update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
       })
-      db.tx.oncomplete = e => {
-        db.result.close()
-      }
     }
   }
 
@@ -154,9 +148,6 @@ class IndexedDB {
           callback(list)
         }
       }
-      db.tx.oncomplete = e => {
-        db.result.close()
-      }
     }
   }
 
@@ -170,9 +161,6 @@ class IndexedDB {
           const req = db.store.get(id)
           req.onsuccess = e => {
             this.core.file.loaded('verd', e.target.result.json)
-          }
-          db.tx.oncomplete = e => {
-            db.result.close()
           }
         }
         break
@@ -198,9 +186,6 @@ class IndexedDB {
               store: newTab.store
             })
           }
-          db.tx.oncomplete = e => {
-            db.result.close()
-          }
         }
         break
     }
@@ -214,9 +199,6 @@ class IndexedDB {
       const req = db.store.get(id)
       req.onsuccess = e => {
         callback(e.target.result)
-      }
-      db.tx.oncomplete = e => {
-        db.result.close()
       }
     }
   }
@@ -235,9 +217,6 @@ class IndexedDB {
           db.store.put(oldData)
           this.core.event.components.CanvasMenu.isSave = true
         }
-        db.tx.oncomplete = e => {
-          db.result.close()
-        }
       }
     } else {
       const openDB = this.openIndexedDB()
@@ -251,9 +230,6 @@ class IndexedDB {
           oldData.json = this.core.file.toJSON()
           db.store.put(oldData)
           this.core.event.components.CanvasMenu.isSave = true
-        }
-        db.tx.oncomplete = e => {
-          db.result.close()
         }
       }
     }
@@ -289,9 +265,6 @@ class IndexedDB {
           }
         }
       }
-      db.tx.oncomplete = e => {
-        db.result.close()
-      }
     }
   }
 
@@ -313,9 +286,6 @@ class IndexedDB {
               callback()
             }
           }
-          db.tx.oncomplete = e => {
-            db.result.close()
-          }
         }
         break
       case 'model':
@@ -326,9 +296,6 @@ class IndexedDB {
           req.onsuccess = e => {
             db.store.delete(id)
             callback()
-          }
-          db.tx.oncomplete = e => {
-            db.result.close()
           }
         }
         break
