@@ -5,7 +5,7 @@
 
 <script>
   export default {
-    name: 'vuerd-electron'
+    name: 'vuerd'
   }
 </script>
 

@@ -27,6 +27,7 @@ class File {
     this.importJSONTag = document.createElement('input')
     this.importJSONTag.setAttribute('type', 'file')
     this.importJSONTag.setAttribute('accept', '.verd')
+    // this.importJSONTag.setAttribute('webkitdirectory', 'webkitdirectory')
     this.importJSONTag.addEventListener('change', e => {
       const f = e.target.files[0]
       if (/\.(verd)$/i.test(f.name)) {
