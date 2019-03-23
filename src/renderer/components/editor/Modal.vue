@@ -5,7 +5,7 @@
         .modal_btn
           button.close(title="ESC" @click="onClose")
             font-awesome-icon(icon="times")
-          button.add(v-if="type === 'project'" @click="projectAdd")
+          button.add(v-if="type === 'project'" @click="projectAdd" title="Ctrl + N")
             font-awesome-icon(icon="plus")
 
         .modal_head
@@ -78,7 +78,7 @@
             li(v-for="item in projectList" :class="{ project_active: projectId === item.id }")
               span(@click="historyLoaded(item.id)")
                 font-awesome-icon(:icon="projectId === item.id ? 'folder-open' : 'folder'")
-              input(type="text" :value="item.name" @change="projectNameChange($event, item.id)" spellcheck="false")
+              input(type="text" :value="item.name" @change="projectNameChange($event, item.id)" spellcheck="false" :title="item.path")
               button(@click="historyDelete(item.id)")
                 font-awesome-icon(icon="times")
 

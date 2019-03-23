@@ -221,7 +221,10 @@ class Event {
             }
             break
           case 78: // key: N
-            if (e.altKey) {
+            if (e.ctrlKey) {
+              e.preventDefault()
+              this.core.indexedDB.add('project')
+            } else if (e.altKey) {
               e.preventDefault()
               // 모델 생성
               model.commit({ type: 'modelAdd' })
