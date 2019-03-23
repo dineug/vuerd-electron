@@ -119,6 +119,19 @@ class IndexedDB {
             }),
             update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
           })
+          this.list('model', [], list => {
+            if (list.length > 100) {
+              let last = list[0]
+              list.forEach(v => {
+                const old = new Date(last.update_date)
+                const date = new Date(v.update_date)
+                if (old.getTime() > date.getTime()) {
+                  last = v
+                }
+              })
+              this.delete('model', last.id, () => {})
+            }
+          })
         }
         break
     }
