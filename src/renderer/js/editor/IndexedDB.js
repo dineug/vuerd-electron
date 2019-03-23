@@ -92,7 +92,7 @@ class IndexedDB {
             }]
           }
           const json = this.core.file.toJSON(project)
-          this.core.file.loaded('verd', json)
+          this.core.file.loaded('verd', json, false, project.id)
           db.store.add({
             id: project.id,
             name: this.getProjectName(),
@@ -355,7 +355,25 @@ class IndexedDB {
             db.store.delete(id)
             if (model.state.id === id) {
               this.lastLoaded([], v => {
-                this.core.file.loaded('verd', v.json)
+                if (v.path === null) {
+                  this.core.file.loaded('verd', v.json, false, v.id)
+                } else {
+                  fs.readFile(v.path, 'utf-8', (err, data) => {
+                    if (err) {
+                      if (err.code === 'ENOENT') {
+                        this.update({
+                          id: v.id,
+                          path: null
+                        })
+                        this.core.file.loaded('verd', v.json, false, v.id)
+                      } else {
+                        alert('An error ocurred reading the file :' + err.message)
+                      }
+                    } else {
+                      this.core.file.loaded('verd', data, false, v.id)
+                    }
+                  })
+                }
               })
             } else {
               callback()
