@@ -3,6 +3,10 @@ import storeERD from '@/store/editor/erd'
 import model from '@/store/editor/model'
 import domToImage from 'dom-to-image'
 import * as util from './util'
+import fs from 'fs'
+import electron from 'electron'
+
+const dialog = electron.remote.dialog
 
 /**
  * 파일 클래스
@@ -12,7 +16,6 @@ class File {
     JSLog('module loaded', 'File')
 
     this.core = null
-    this.setImport()
     this.a = document.createElement('a')
   }
 
@@ -22,58 +25,39 @@ class File {
     this.core = core
   }
 
-  // import ready
-  setImport () {
-    this.importJSONTag = document.createElement('input')
-    this.importJSONTag.setAttribute('type', 'file')
-    this.importJSONTag.setAttribute('accept', '.verd')
-    // this.importJSONTag.setAttribute('webkitdirectory', 'webkitdirectory')
-    this.importJSONTag.addEventListener('change', e => {
-      const f = e.target.files[0]
-      if (/\.(verd)$/i.test(f.name)) {
-        const reader = new FileReader()
-        reader.readAsText(f)
-        reader.onload = () => {
-          this.loaded('verd', reader.result, true)
-          this.core.indexedDB.setImport(f.name.substr(0, f.name.lastIndexOf('.')))
-          this.importJSONTag.value = ''
-        }
-      } else {
-        alert('Just upload the verd file')
-      }
-    })
-    this.importSQLTag = document.createElement('input')
-    this.importSQLTag.setAttribute('type', 'file')
-    this.importSQLTag.setAttribute('accept', '.sql')
-    this.importSQLTag.addEventListener('change', e => {
-      const f = e.target.files[0]
-      if (/\.(sql)$/i.test(f.name)) {
-        const reader = new FileReader()
-        reader.readAsText(f)
-        reader.onload = () => {
-          this.loaded('sql', reader.result, true)
-          this.importSQLTag.value = ''
-        }
-      } else {
-        alert('Just upload the sql file')
-      }
-    })
-  }
-
   // file import click event
   click (type) {
     switch (type) {
       case 'verd':
-        this.importJSONTag.click()
-        break
-      case 'sql':
-        this.importSQLTag.click()
+        dialog.showOpenDialog({
+          properties: ['openFile'],
+          filters: [
+            { name: 'erd', extensions: ['verd'] }
+          ]
+        }, (fileNames) => {
+          if (fileNames === undefined) return false
+
+          // fileNames[0] file path
+          if (/\.(verd)$/i.test(fileNames[0])) {
+            fs.readFile(fileNames[0], 'utf-8', (err, data) => {
+              if (err) {
+                alert('An error ocurred reading the file :' + err.message)
+              } else {
+                this.loaded('verd', data, true)
+                let path = fileNames[0]
+                this.core.indexedDB.setImport(util.getPathToFileName(path), path)
+              }
+            })
+          } else {
+            alert('Just upload the verd file')
+          }
+        })
         break
     }
   }
 
   // loaded
-  loaded (type, data, isImport) {
+  loaded (type, data, isImport, id) {
     switch (type) {
       case 'verd':
         try {
@@ -81,6 +65,8 @@ class File {
           this.core.data.set(json)
           if (isImport) {
             json.id = util.guid()
+          } else {
+            json.id = id
           }
           const tabs = []
           for (let tab of json.tabs) {
@@ -120,9 +106,26 @@ class File {
       const fileName = `${v.name}.${type}`
       switch (type) {
         case 'verd':
-          const json = this.toJSON()
-          const blobJson = new Blob([json], { type: 'application/json' })
-          this.execute(blobJson, fileName)
+          dialog.showSaveDialog({
+            defaultPath: fileName,
+            filters: [
+              { name: 'erd', extensions: ['verd'] }
+            ]
+          }, (fileName) => {
+            if (fileName === undefined) return false
+            const json = this.toJSON()
+            fs.writeFile(fileName, json, (err) => {
+              if (err) {
+                alert('An error ocurred creating the file ' + err.message)
+              } else {
+                this.core.indexedDB.update({
+                  id: model.state.id,
+                  path: fileName,
+                  name: util.getPathToFileName(fileName)
+                })
+              }
+            })
+          })
           break
         case 'sql':
           const sql = this.core.sql.toDDL()

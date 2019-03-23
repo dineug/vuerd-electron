@@ -147,10 +147,6 @@ export default {
           name: 'export',
           list: [
             {
-              type: 'export-verd',
-              name: 'export-verd'
-            },
-            {
               type: 'export-png',
               name: 'export-png'
             },
@@ -265,9 +261,6 @@ export default {
           break
         case 'import-verd':
           ERD.core.file.click('verd')
-          break
-        case 'export-verd':
-          ERD.core.file.exportData('verd')
           break
         case 'project':
           this.isModalProject = true

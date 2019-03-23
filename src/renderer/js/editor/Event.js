@@ -391,11 +391,6 @@ class Event {
               })
             }
             break
-          case 83:
-            if (e.ctrlKey) {
-              e.preventDefault()
-            }
-            break
         }
       } else {
         if (e.keyCode === 27) {

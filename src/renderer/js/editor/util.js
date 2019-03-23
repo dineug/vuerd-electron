@@ -26,7 +26,11 @@ export const getData = (list, id) => {
 export const setData = (oldData, newData) => {
   Object.keys(newData).forEach(key => {
     if (typeof newData[key] === 'object') {
-      setData(oldData[key], newData[key])
+      if (newData[key] === null) {
+        oldData[key] = newData[key]
+      } else {
+        setData(oldData[key], newData[key])
+      }
     } else {
       oldData[key] = newData[key]
     }
@@ -36,6 +40,19 @@ export const setData = (oldData, newData) => {
 // 파일이름 휴효성처리
 export const validFileName = name => {
   return name.replace(fileNameRex(), '').replace(fileNameRex.windowsNames(), '')
+}
+
+// path 파일이름 추출
+export const getPathToFileName = path => {
+  path = path.replace(/\\/g, '/')
+  const fileName = path.substr(path.lastIndexOf('/') + 1)
+  return fileName.substr(0, fileName.lastIndexOf('.'))
+}
+
+// path 추출
+export const getPathFile = path => {
+  path = path.replace(/\\/g, '/')
+  return path.substr(0, path.lastIndexOf('/'))
 }
 
 // 날짜 포맷 yyyy, MM, dd, hh, mm, ss

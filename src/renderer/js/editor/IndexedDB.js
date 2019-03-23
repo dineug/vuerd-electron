@@ -2,6 +2,7 @@ import JSLog from '../JSLog'
 import model from '@/store/editor/model'
 import storeERD from '@/store/editor/erd'
 import * as util from './util'
+import fs from 'fs'
 
 const DB_NAME = 'verd'
 const DB_VERSION = 2
@@ -25,7 +26,25 @@ class IndexedDB {
     JSLog('module dependency init', 'IndexedDB')
     this.core = core
     this.lastLoaded([], v => {
-      this.core.file.loaded('verd', v.json)
+      if (v.path === null) {
+        this.core.file.loaded('verd', v.json, false, v.id)
+      } else {
+        fs.readFile(v.path, 'utf-8', (err, data) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              this.update({
+                id: v.id,
+                path: null
+              })
+              this.core.file.loaded('verd', v.json, false, v.id)
+            } else {
+              alert('An error ocurred reading the file :' + err.message)
+            }
+          } else {
+            this.core.file.loaded('verd', data, false, v.id)
+          }
+        })
+      }
     })
   }
 
@@ -78,7 +97,8 @@ class IndexedDB {
             id: project.id,
             name: this.getProjectName(),
             json: json,
-            update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
+            update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date()),
+            path: null
           })
         }
         break
@@ -105,7 +125,7 @@ class IndexedDB {
   }
 
   // import 파일 추가
-  setImport (name) {
+  setImport (name, path) {
     name = util.validFileName(name)
     const openDB = this.openIndexedDB()
     openDB.onsuccess = e => {
@@ -114,7 +134,8 @@ class IndexedDB {
         id: model.state.id,
         name: name,
         json: this.core.file.toJSON(),
-        update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
+        update_date: util.formatDate('yyyy-MM-dd hh:mm:ss', new Date()),
+        path: path
       })
     }
   }
@@ -160,7 +181,25 @@ class IndexedDB {
           const db = this.getObjectStore(openDB, DB_STORE_NAME, MODE.R)
           const req = db.store.get(id)
           req.onsuccess = e => {
-            this.core.file.loaded('verd', e.target.result.json)
+            if (e.target.result.path === null) {
+              this.core.file.loaded('verd', e.target.result.json, false, e.target.result.id)
+            } else {
+              fs.readFile(e.target.result.path, 'utf-8', (err, data) => {
+                if (err) {
+                  if (err.code === 'ENOENT') {
+                    this.update({
+                      id: e.target.result.id,
+                      path: null
+                    })
+                    this.core.file.loaded('verd', e.target.result.json, false, e.target.result.id)
+                  } else {
+                    alert('An error ocurred reading the file :' + err.message)
+                  }
+                } else {
+                  this.core.file.loaded('verd', data, false, e.target.result.id)
+                }
+              })
+            }
           }
         }
         break
@@ -204,7 +243,7 @@ class IndexedDB {
   }
 
   // 수정
-  update (data) {
+  update (data, isRename) {
     if (data) {
       const openDB = this.openIndexedDB()
       openDB.onsuccess = e => {
@@ -212,8 +251,35 @@ class IndexedDB {
         const req = db.store.get(data.id)
         req.onsuccess = e => {
           const oldData = req.result
+          const oldPath = oldData.path
+          const oldName = oldData.name
           oldData.update_date = util.formatDate('yyyy-MM-dd hh:mm:ss', new Date())
           util.setData(oldData, data)
+
+          if (oldData.path === null) {
+            this.core.file.exportData('verd')
+          } else if (!isRename) {
+            fs.writeFile(oldData.path, oldData.json, (err) => {
+              if (err) {
+                alert('An error ocurred updating the file' + err.message)
+              }
+            })
+          } else if (isRename) {
+            const newPath = `${util.getPathFile(oldData.path)}/${data.name}.verd`
+            fs.rename(oldData.path, newPath, (err) => {
+              if (err) {
+                alert('An error ocurred updating the file' + err.message)
+                this.update({
+                  id: data.id,
+                  path: oldPath,
+                  name: oldName
+                })
+              }
+            })
+
+            oldData.path = newPath
+          }
+
           db.store.put(oldData)
           this.core.event.components.CanvasMenu.isSave = true
         }
@@ -230,6 +296,15 @@ class IndexedDB {
           oldData.json = this.core.file.toJSON()
           db.store.put(oldData)
           this.core.event.components.CanvasMenu.isSave = true
+          if (oldData.path === null) {
+            this.core.file.exportData('verd')
+          } else {
+            fs.writeFile(oldData.path, oldData.json, (err) => {
+              if (err) {
+                alert('An error ocurred updating the file' + err.message)
+              }
+            })
+          }
         }
       }
     }

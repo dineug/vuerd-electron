@@ -179,7 +179,7 @@ export default {
       ERD.core.indexedDB.update({
         id: id,
         name: e.target.value
-      })
+      }, true)
     },
     // 프로젝트 추가
     projectAdd () {
