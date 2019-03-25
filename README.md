@@ -7,7 +7,8 @@
 # vuerd-electron
 ## ERD
 * ERD editor [demo](https://vuerd.github.io/vuerd-front/).
-* chrome extensions [app](https://chrome.google.com/webstore/detail/vuerd/jnjbnkehgfngjhlcaefjfdamioapajfg)
+* ERD chrome extensions [app](https://chrome.google.com/webstore/detail/vuerd/jnjbnkehgfngjhlcaefjfdamioapajfg)
+* ERD desktop app [download](https://github.com/vuerd/vuerd-electron/releases)
 
 ## start
 
