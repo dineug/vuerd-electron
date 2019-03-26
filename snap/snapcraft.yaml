@@ -8,35 +8,44 @@
   grade: stable
   confinement: classic
 
-  apps:
-    vuerd:
-      command: desktop-launch $SNAP/vuerd.wrapper
+  architectures:
+    - build-on: amd64
 
   parts:
-    src:
-      plugin: nodejs
-      node-packages:
-        - electron
-      source: git://github.com/vuerd/vuerd-electron
-
-    deps:
+    gnome:
       plugin: nil
+      build-packages:
+        - software-properties-common
+      override-pull: |
+        add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
+        apt -y update
+        apt -y upgrade
+    vuerd:
+      after:
+        - gnome
+      plugin: dump
+      source: https://github.com/vuerd/vuerd-electron/releases/download/v1.0.0/vuerd.1.0.0.amd64.deb
+      source-type: deb
       stage-packages:
+        - fcitx-frontend-gtk3
+        - libappindicator3-1
+        - libasound2
+        - libcurl3-gnutls
         - libgconf-2-4
-        - libnss3
-        - libxss1
-        - fontconfig-config
-
-    desktop-integration:
-      plugin: nil
-      stage-packages:
-        - libappindicator1
-        - libdbusmenu-glib4
+        - libgtk-3-0
         - libnotify4
-        - libunity9
-
+        - libnspr4
+        - libnss3
+        - libpcre3
+        - libpulse0
+        - libxss1
+        - libxtst6
     launcher:
-      plugin: copy
-      files:
-        vuerd: vuerd.wrapper
-      after: [desktop-glib-only]
+      plugin: dump
+      source: files/
+      prepare: |
+        chmod +x bin/launcher
+  apps:
+    vuerd:
+      command: bin/launcher ${SNAP}/usr/share/vuerd/vuerd
+      desktop: usr/share/applications/vuerd.desktop
