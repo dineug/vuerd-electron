@@ -1,0 +1,41 @@
+
+  name: vuerd
+  version: '1.0.0'
+  summary: ERD
+  description: |
+    Very Simple ERD
+
+  grade: stable
+  confinement: classic
+
+  parts:
+    vuerd:
+      plugin: dump
+      source: vuerd-electron_1.0.0_amd64.deb
+      source-type: deb
+      after:
+
+        - desktop-gtk3
+      stage-packages:
+        - libasound2
+        - libgconf2-4
+        - libnotify4
+        - libnspr4
+        - libnss3
+        - libpcre3
+        - libpulse0
+        - libxss1
+        - libxtst6
+    electron-launch:
+      plugin: dump
+      source: files/
+      prepare: |
+        chmod +x bin/electron-launch
+
+  apps:
+    vuerd:
+      command: bin/electron-launch $SNAP/usr/lib/vuerd/vuerd
+      desktop: usr/share/applications/vuerd.desktop
+      environment:
+        TMPDIR: $XDG_RUNTIME_DIR
+  
