@@ -6,7 +6,7 @@
     Very Simple ERD
 
   grade: stable
-  confinement: "strict"
+  confinement: classic
 
   apps:
     vuerd:
