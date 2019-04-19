@@ -1,7 +1,7 @@
 <template lang="pug">
   .menu_canvas
     // 메뉴 top
-    draggable.menu_top(element="ul" v-model="model.tabs" :options="{group:'tab', ghostClass: 'ghost'}")
+    draggable.menu_top(tag="ul" v-model="model.tabs" v-bind="{group:'tab', ghostClass: 'ghost'}")
       transition-group(type="transition" name="menu-top")
 
         li(v-for="(tab, i) in model.tabs" :key="tab.id")
@@ -25,12 +25,15 @@
       :class="{ undo_none: menu.type === 'undo' && !isUndo, redo_none: menu.type === 'redo' && !isRedo, save: menu.type === 'save' && isSave, save_none: menu.type === 'save' && !isSave }"
       @click="menuAction(menu.type)")
         font-awesome-icon(:icon="menu.icon")
-        ol(v-if="menu.type === 'DBType'" :style="`top: ${i * 32.5}px`")
+        ol(v-if="menu.type === 'DBType'" :style="`top: ${i * 32}px`")
           li(v-for="item in menu.list" :class="{ db_active: DBType === item }"
           @click="changeDB(item)") {{ item }}
-        ol(v-else-if="menu.type === 'export' || menu.type === 'import'" :style="`top: ${i * 32.5}px`")
-          li(v-for="item in menu.list"
+        ol(v-else-if="menu.type === 'export' || menu.type === 'import'" :style="`top: ${i * 32}px`")
+          li(v-if="item.type !== 'import-sql'" v-for="item in menu.list"
           @click="menuAction(item.type)") {{ item.name }}
+          li.import_sql(v-else) {{ item.name }}
+            ul
+              li(v-for="child in item.list" @click="importSQL(child)") {{ child }}
 
     // 메뉴 Preview Navigation
     canvas-main.preview(:style="`top: ${preview.top}px; left: ${preview.left}px; transform: scale(${previewRatio}, ${previewRatio});`"
@@ -138,6 +141,17 @@ export default {
             {
               type: 'import-verd',
               name: 'import-verd'
+            },
+            {
+              type: 'import-sql',
+              name: 'import-sql',
+              list: [
+                'MariaDB',
+                'MSSQL',
+                'MySQL',
+                'Oracle',
+                'PostgreSQL'
+              ]
             }
           ]
         },
@@ -307,6 +321,10 @@ export default {
           ERD.core.event.isStop = true
           break
       }
+    },
+    // sql import
+    importSQL (DBType) {
+      ERD.core.file.click('sql', DBType)
     },
     // 미리보기 네비게이션 이벤트 시작
     onPreview () {
@@ -499,6 +517,21 @@ export default {
             &:hover {
               color: white;
               background-color: $selected;
+            }
+          }
+
+          li.import_sql {
+            ul {
+              display: none;
+              position: fixed;
+              left: 117.41px;
+              top: 64px;
+              background-color: black;
+            }
+            &:hover {
+              ul {
+                display: block;
+              }
             }
           }
 

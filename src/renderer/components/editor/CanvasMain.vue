@@ -44,7 +44,7 @@
         @focus="onFocus(table.id)"
         @blur="onBlur")
 
-      draggable(v-model="table.columns" :options="{group:'table'}"
+      draggable(v-model="table.columns" v-bind="{group:'table'}"
       @start="onDraggableUndo"
       @update="onDraggable"
       @add="onDraggable")
