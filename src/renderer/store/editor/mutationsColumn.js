@@ -139,7 +139,10 @@ export default {
       document.getElementById(`columnName_${table.columns[isColumns - 1].id}`).focus()
     }
 
-    this.commit({ type: 'columnWidthReset' })
+    this.commit({
+      type: 'columnWidthReset',
+      id: data.tableId
+    })
     // undo, redo 등록
     ERD.core.undoRedo.add({
       undo: undo,
@@ -260,7 +263,10 @@ export default {
       })
     }
 
-    this.commit({ type: 'columnWidthReset' })
+    this.commit({
+      type: 'columnWidthReset',
+      id: data.tableId
+    })
     // undo, redo 등록
     ERD.core.undoRedo.add({
       undo: undo,
@@ -304,9 +310,10 @@ export default {
     }
   },
   // 컬럼 너비 리셋
-  widthReset (state) {
+  widthReset (state, data) {
     JSLog('mutations', 'column', 'widthReset')
-    state.tables.forEach(table => {
+    if (data.id) {
+      const table = util.getData(state.tables, data.id)
       const max = util.columnMaxWidth(state, table.columns)
       table.columns.forEach(column => {
         column.ui.widthName = max.name
@@ -327,7 +334,30 @@ export default {
       } else {
         table.ui.width = state.TABLE_WIDTH
       }
-    })
+    } else {
+      state.tables.forEach(table => {
+        const max = util.columnMaxWidth(state, table.columns)
+        table.columns.forEach(column => {
+          column.ui.widthName = max.name
+          column.ui.widthDataType = max.dataType
+          column.ui.widthComment = max.comment
+          column.ui.widthDomain = max.domain
+        })
+        if (table.columns.length !== 0) {
+          let width = table.columns[0].ui.widthName +
+            table.columns[0].ui.widthDataType +
+            table.columns[0].ui.widthComment +
+            table.columns[0].ui.widthDomain
+          if (width > state.COLUMN_WIDTH * 4) {
+            table.ui.width = state.TABLE_WIDTH + width - state.COLUMN_WIDTH * 4
+          } else {
+            table.ui.width = state.TABLE_WIDTH
+          }
+        } else {
+          table.ui.width = state.TABLE_WIDTH
+        }
+      })
+    }
   },
   // 컬럼 편집모드
   edit (state, data) {
@@ -375,7 +405,10 @@ export default {
       columnId: data.columnId
     })
 
-    this.commit({ type: 'columnWidthReset' })
+    this.commit({
+      type: 'columnWidthReset',
+      id: data.tableId
+    })
     // undo, redo 등록
     ERD.core.undoRedo.add({
       undo: undo,

@@ -675,7 +675,10 @@ export default {
           columnId: columnId
         })
       }
-      ERD.store().commit({ type: 'columnWidthReset' })
+      ERD.store().commit({
+        type: 'columnWidthReset',
+        id: tableId
+      })
     },
     // 도메인 변경 처리
     changeDomain (tableId, columnId) {
