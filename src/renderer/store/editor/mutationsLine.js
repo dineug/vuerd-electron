@@ -40,7 +40,10 @@ export default {
     line.points[0].columnIds = data.startColumnIds
     line.points[1].columnIds = data.endColumnIds
     if (data.tableId) line.points[1].id = data.tableId
-    this.commit({ type: 'columnWidthReset' })
+    this.commit({
+      type: 'columnWidthReset',
+      id: data.tableId
+    })
   },
   // 관계 삭제
   delete (state, data) {
@@ -136,7 +139,10 @@ export default {
       }
     }
 
-    this.commit({ type: 'columnWidthReset' })
+    this.commit({
+      type: 'columnWidthReset',
+      id: tableId
+    })
     // undo, redo 등록
     ERD.core.undoRedo.add({
       undo: ERD.core.undoRedo.undoJson.draggable,

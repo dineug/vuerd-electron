@@ -94,7 +94,10 @@ export default new Vuex.Store({
             })
           }
         }
-        ERD.core.erd.store().commit({ type: 'columnWidthReset' })
+        ERD.core.erd.store().commit({
+          type: 'columnWidthReset',
+          id: state.table.id
+        })
         // undo, redo 등록
         ERD.core.undoRedo.add({
           undo: undo,
