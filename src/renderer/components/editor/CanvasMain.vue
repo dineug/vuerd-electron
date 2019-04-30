@@ -523,6 +523,10 @@ export default {
     // 컬럼 수정 이벤트
     onEnterEditor (e, isRead, current, tableId, columnId) {
       if (!e.altKey) {
+        if (isRead) {
+          e.target.blur()
+          e.target.focus()
+        }
         if (columnId === undefined) {
           ERD.store().commit({
             type: 'tableEdit',

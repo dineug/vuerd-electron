@@ -141,18 +141,18 @@ export default {
             {
               type: 'import-verd',
               name: 'import-verd'
-            },
-            {
-              type: 'import-sql',
-              name: 'import-sql',
-              list: [
-                'MariaDB',
-                'MSSQL',
-                'MySQL',
-                'Oracle',
-                'PostgreSQL'
-              ]
             }
+            // {
+            //   type: 'import-sql',
+            //   name: 'import-sql',
+            //   list: [
+            //     'MariaDB',
+            //     'MSSQL',
+            //     'MySQL',
+            //     'Oracle',
+            //     'PostgreSQL'
+            //   ]
+            // }
           ]
         },
         {
