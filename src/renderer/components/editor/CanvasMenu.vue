@@ -356,6 +356,10 @@ export default {
     },
     // edit on/off
     onEnterEditor (e, isRead, id) {
+      if (isRead) {
+        e.target.blur()
+        e.target.focus()
+      }
       model.commit({
         type: 'modelEdit',
         id: id,
