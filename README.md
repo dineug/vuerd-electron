@@ -2,7 +2,7 @@
 > This project is no longer managed  
 
 completely restructured  
-Please use the [vscode extension ERD Editor]((https://marketplace.visualstudio.com/items?itemName=dineug.vuerd-vscode))
+Please use the [vscode extension ERD Editor](https://marketplace.visualstudio.com/items?itemName=dineug.vuerd-vscode)
 
 ## Migration Data
 ```javascript
